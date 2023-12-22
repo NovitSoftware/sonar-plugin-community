@@ -1,0 +1,68 @@
+name: Sonarqube Community Statistics
+description: 'This is a plugin that allows you to obtain statistics by analyzing PR with SonarQube (community) and save those statistics'
+author: Gustavo Venturo
+branding:
+  icon: 'aperture'
+  color: 'purple'
+inputs:
+  analysis:
+    description: 'Ability to obtain information from SonarQube and save it in the DB'
+    default: false
+  pullRequest:
+    description: 'github pullRequest'
+    default: ${{ github.event.number }}
+  path:
+    description: 'github pullRequest'
+    default: "."
+  branch:
+    description: 'github branch'
+    default: ${{ github.base_ref }}
+  repository:
+    description: 'github repository'
+    default: ${{ github.repository }}
+  usersTeam:
+    description: 'possibility to request changes in the PR'
+    default: '[{"team":"n","discord":"n","github":"n"}]'
+  comment:
+    description: 'possibility of being able to make comments to the github PRs'
+    default: true
+  blockPR:
+    description: 'possibility to request changes in the PR'
+    default: true
+  user: 
+    description: Personal access actor (PAT) used to fetch the repository. The PAT is configured
+      with the local git config, which enables your scripts to run authenticated git
+      commands. The post-job step removes the PAT.'
+    default: ${{ github.actor }}
+  token:
+    description: 'Personal access token (PAT) used to fetch the repository. The PAT is configured
+      with the local git config, which enables your scripts to run authenticated git
+      commands. The post-job step removes the PAT.'
+    default: ${{ github.token }}
+  sonarURL:
+    description: 'URL where your sonar instance is hosted'
+    required: true
+  sonarToken:
+    description: 'token of your sonar instance'
+    required: true
+  sonarKey:
+    description: 'key of the project to analyze'
+    required: true
+  pgHost:
+    description: 'postgre instance host'
+    required: false
+  pgUser:
+    description: 'user instance host'
+    required: false
+  pgDB:
+    description: 'sonar instance db'
+    required: false
+  pgPass:
+    description: 'password instance host'
+    required: false
+  pgPort:
+    description: 'port instance host'
+    required: false
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
