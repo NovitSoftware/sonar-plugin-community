@@ -25,7 +25,7 @@ ${coverageIcon(Number(sonarqubeData.measure.find(x => x.metric == "new_duplicate
 }
 
 function searchPath(value : string) : string{
-    return `![${value}](https://raw.githubusercontent.com/gustavo1020/Sonarqube-Plugin-Community-Statistics/main/img/${value}.png)`
+    return `![${value}](https://raw.githubusercontent.com/NovitSoftware/sonar-plugin-community/main/img/${value}.png)`
 }
 
 function searchSecurity(value : Measure[], search: string) : string{
