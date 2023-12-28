@@ -1,4 +1,4 @@
-name: Sonarqube Community Statistics
+name: Sonarqube Community Plugin
 description: 'This is a plugin that allows you to obtain statistics by analyzing PR with SonarQube (community) and save those statistics'
 author: Gustavo Venturo
 branding:
