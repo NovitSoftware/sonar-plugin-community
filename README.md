@@ -53,7 +53,7 @@
       - name: Esperar 2 minutos
         run: sleep 120
 ```
-- Now run the plugin so it can interact with the sonar api and github api, keep in mind that it is necessary to configure the necessary secrets (NUGET_TOKEN = github token,  NUGET_USER = the token user,  HOST_PG = the port where your postgres database is hosted, HOST_PASS = postgres database password ) other things to keep in mind (pgUser = postgres database user,  pgDB = postgres database name, pgPort = postgres database port)
+- Now run the plugin so it can interact with the sonar api and github api, keep in mind that it is necessary to configure the necessary secrets ```(NUGET_TOKEN = github token,  NUGET_USER = the token user,  HOST_PG = the port where your postgres database is hosted, HOST_PASS = postgres database password )``` other things to keep in mind ```(pgUser = postgres database user,  pgDB = postgres database name, pgPort = postgres database port)```.
 ```yml
      - name: Sonarqube Community Statistics  
         uses: NovitSoftware/sonar-plugin-community@v1.0.0-stable
