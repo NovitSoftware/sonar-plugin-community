@@ -48,7 +48,7 @@ export async function addReviewers(){
 
 export async function addReview(value : string, message : string){
     const reviewBody = {
-        event: `${value == "OK" ? "COMMENT" : "REQUEST_CHANGES"}`,
+        event: "COMMENT",
         body: message,
     };
 
