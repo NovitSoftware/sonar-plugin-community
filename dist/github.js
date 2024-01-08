@@ -57,7 +57,7 @@ exports.addReviewers = addReviewers;
 function addReview(value, message) {
     return __awaiter(this, void 0, void 0, function* () {
         const reviewBody = {
-            event: `${value == "OK" ? "COMMENT" : "REQUEST_CHANGES"}`,
+            event: "COMMENT",
             body: message,
         };
         const review = axios_1.default.post(BASE_URL + `/repos/${GITHUB_REPOSITORY}/pulls/${GITHUB_PULL_REQUEST}/reviews`, reviewBody, { headers })
