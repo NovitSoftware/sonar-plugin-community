@@ -17,7 +17,7 @@ inputs:
   branch:
     description: 'github branch'
     default: ${{ github.base_ref }}
-  headRef
+  headRef:
     description: 'github headRef'
     default: ${{ github.head_ref }}
   eventName:
