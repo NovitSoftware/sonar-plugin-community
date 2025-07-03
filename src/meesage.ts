@@ -1,10 +1,7 @@
 import {SonarqubeData, MetricFacets, Measure } from './models/sonarqube'
 import {getInput } from '@actions/core';
 
-// Get SonarQube configuration for link generation
 const SONAR_URL = getInput("sonarURL") || 'undefined'
-const SONAR_KEY = getInput("sonarKey") || 'undefined'
-const GITHUB_PR_NUMBER = getInput("pullRequest") || 'undefined'
 const GITHUB_EVENT_NAME = getInput("eventName") || 'undefined'
 
 export function generateMessage (sonarqubeData : SonarqubeData, sonarPrId?: string) : string {
@@ -104,12 +101,10 @@ function generateSonarQubeLink(projectKey: string, sonarPrId?: string): string {
     }
 
     let baseUrl = SONAR_URL;
-    // Remove trailing slash if present
     if (baseUrl.endsWith('/')) {
         baseUrl = baseUrl.slice(0, -1);
     }
 
-    // Determine if we're analyzing a PR or main branch
     const isPR = GITHUB_EVENT_NAME === 'pull_request' && sonarPrId !== undefined && sonarPrId !== 'undefined';
     
     let sonarQubeUrl: string;

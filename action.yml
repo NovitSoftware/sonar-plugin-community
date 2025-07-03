@@ -17,6 +17,12 @@ inputs:
   branch:
     description: 'github branch'
     default: ${{ github.base_ref }}
+  headRef
+    description: 'github headRef'
+    default: ${{ github.head_ref }}
+  eventName:
+    description: 'github event name'
+    default: ${{ github.event_name }}
   repository:
     description: 'github repository'
     default: ${{ github.repository }}

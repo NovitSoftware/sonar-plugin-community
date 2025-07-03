@@ -118,7 +118,6 @@ function issuesResolved(validateIssuesResponse : HistoryIssuesResponse): number 
     return cantCodeSmells + cantBugs + cantVulnerabilities
 }
 
-// Interface for SonarQube Pull Request
 interface SonarPullRequest {
     key: string;
     title: string;
@@ -148,32 +147,27 @@ export async function getSonarPullRequestId(branchName: string): Promise<string 
         
         let matchingPr: SonarPullRequest | undefined;
         
-        // 1. Exact branch name match (most accurate)
         matchingPr = pullRequests.find(pr => pr.branch === branchName);
         
         if (!matchingPr) {
-            // 2. Case insensitive branch name match
             matchingPr = pullRequests.find(pr => 
                 pr.branch?.toLowerCase() === branchName.toLowerCase()
             );
         }
         
         if (!matchingPr) {
-            // 3. Partial branch name match (in case of prefixes/suffixes)
             matchingPr = pullRequests.find(pr => 
                 pr.branch?.includes(branchName) || branchName.includes(pr.branch)
             );
         }
         
         if (!matchingPr) {
-            // 4. Look for branch name in title
             matchingPr = pullRequests.find(pr => 
                 pr.title?.includes(branchName)
             );
         }
         
         if (!matchingPr && pullRequests.length > 0) {
-            // 5. If no match found, try to get the most recent PR (fallback)
             matchingPr = pullRequests.sort((a, b) => 
                 new Date(b.analysisDate).getTime() - new Date(a.analysisDate).getTime()
             )[0];
@@ -194,7 +188,6 @@ export async function getSonarPullRequestId(branchName: string): Promise<string 
     }
 }
 
-// Function to get all SonarQube Pull Requests
 export async function getAllSonarPullRequests(): Promise<SonarPullRequest[]> {
     try {
         const pull_requests_response = await axios.get<SonarPullRequestsResponse>(
@@ -209,7 +202,6 @@ export async function getAllSonarPullRequests(): Promise<SonarPullRequest[]> {
     }
 }
 
-// Function to get SonarQube PR ID by branch name (more accurate)
 export async function getSonarPullRequestIdByBranch(branchName: string): Promise<string | undefined> {
     try {
         const pull_requests_response = await axios.get<SonarPullRequestsResponse>(
@@ -220,7 +212,6 @@ export async function getSonarPullRequestIdByBranch(branchName: string): Promise
         const pullRequests = pull_requests_response.data.pullRequests;
         console.log('Available SonarQube PRs:', pullRequests);
         
-        // Look for exact branch name match
         const matchingPr = pullRequests.find(pr => pr.branch === branchName);
         
         if (matchingPr) {
