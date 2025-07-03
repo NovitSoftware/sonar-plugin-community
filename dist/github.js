@@ -21,6 +21,7 @@ const usersAlias = JSON.parse((0, core_1.getInput)("usersTeam") || 'qwe');
 const GITHUB_PULL_REQUEST = (0, core_1.getInput)("pullRequest") || 'valor_predeterminado';
 const GITHUB_BRANCH = (0, core_1.getInput)("branch") || 'valor_predeterminado';
 const GITHUB_TOKEN = (0, core_1.getInput)("token");
+const PATH_INFO = (0, core_1.getInput)("path");
 const GTIHUB_USER_REVIEW = (0, core_1.getInput)("user") || 'valor_predeterminado';
 const BASE_URL = "https://api.github.com";
 const headers = {
@@ -74,7 +75,8 @@ exports.addReview = addReview;
 function addCommentIssues(newIssues) {
     return __awaiter(this, void 0, void 0, function* () {
         newIssues.issues.forEach(element => {
-            const comments = [{ path: element.component, line: element.line, body: `${serchSeverity(element.severity)} 
+            const message = ``;
+            const comments = [{ path: `${PATH_INFO}` + element.component.replace(`${element.project}:`, ""), line: element.line, body: `${serchSeverity(element.severity)} 
         > ${element.message}
         ` }];
             const commentBody = {
@@ -88,6 +90,7 @@ function addCommentIssues(newIssues) {
             })
                 .catch((error) => {
                 var _a;
+                const messageError = addReview("OK", createMessageError(element));
                 console.error('Error al agregar el comentario al pull request:', ((_a = error.response) === null || _a === void 0 ? void 0 : _a.data) || error.message);
             });
         });
@@ -106,4 +109,9 @@ function serchSeverity(value) {
     if (value == "BLOCKER")
         return "> [!CAUTION]";
     return "> [!TIP]";
+}
+function createMessageError(element) {
+    return `${element.severity}
+    > Issue detectado no perteneciente al código agregado. Esto podría deberse a la desactualización del pull request con la rama principal. Posibles soluciones(git merge ${GITHUB_BRANCH} o arreglar el siguiente issue en el path ${element.component} line ${element.line} message ${element.message})
+    `;
 }

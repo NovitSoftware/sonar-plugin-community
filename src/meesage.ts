@@ -1,6 +1,13 @@
 import {SonarqubeData, MetricFacets, Measure } from './models/sonarqube'
+import {getInput } from '@actions/core';
 
-export function generateMessage (sonarqubeData : SonarqubeData) : string {
+// Get SonarQube configuration for link generation
+const SONAR_URL = getInput("sonarURL") || 'undefined'
+const SONAR_KEY = getInput("sonarKey") || 'undefined'
+const GITHUB_PR_NUMBER = getInput("pullRequest") || 'undefined'
+const GITHUB_EVENT_NAME = getInput("eventName") || 'undefined'
+
+export function generateMessage (sonarqubeData : SonarqubeData, sonarPrId?: string) : string {
 
     return `## Quality Gate ${sonarqubeData.project_status.projectStatus.status == "OK" ? "Passed" : "Failed"}   ${searchPath(sonarqubeData.project_status.projectStatus.status == "OK" ? "approv" : "rejected")} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ![sonarqube 256x63 (1)](https://github.com/gustavo1020/-release-version-/assets/49031933/27434a7b-6a02-4686-a96a-57ecc73d5a85) &nbsp;&nbsp;  x  &nbsp;&nbsp;![c54422d50dc06739a00342935698799b (1)](https://github.com/gustavo1020/-release-version-/assets/49031933/0b02d722-ec4e-4397-b4c7-18108e8efba5)
 
@@ -20,6 +27,13 @@ ${searchPath("codeSmell")} ${searchPath(searchSecurity(sonarqubeData.measure, "n
 ${duplicatedIcon(Number(sonarqubeData.measure.find(x => x.metric == "new_coverage")?.period.value || "0"))} **Coverage** **%${sonarqubeData.measure.find(x => x.metric == "new_coverage")?.period.value || 0}**
 
 ${coverageIcon(Number(sonarqubeData.measure.find(x => x.metric == "new_duplicated_lines_density")?.period.value || "0"))} **Duplication** **%${sonarqubeData.measure.find(x => x.metric == "new_duplicated_lines_density")?.period.value  || 0}**
+
+### 🔍 View Detailed Analysis
+
+${generateSonarQubeLink(sonarqubeData.uuid_proyect, sonarPrId)}
+
+---
+*Click the link above to view the complete analysis in SonarQube and get detailed information about all issues.*
 
    `
 }
@@ -82,4 +96,29 @@ function coverageIcon(coverage: number): string {
        return searchPath("coverage_gt_50");
     }
     return searchPath("coverage_gt_80");
-  }
+}
+
+function generateSonarQubeLink(projectKey: string, sonarPrId?: string): string {
+    if (SONAR_URL === 'undefined' || projectKey === 'undefined') {
+        return "📊 **[View in SonarQube](javascript:void(0))** *(Link not available)*";
+    }
+
+    let baseUrl = SONAR_URL;
+    // Remove trailing slash if present
+    if (baseUrl.endsWith('/')) {
+        baseUrl = baseUrl.slice(0, -1);
+    }
+
+    // Determine if we're analyzing a PR or main branch
+    const isPR = GITHUB_EVENT_NAME === 'pull_request' && sonarPrId !== undefined && sonarPrId !== 'undefined';
+    
+    let sonarQubeUrl: string;
+    
+    if (isPR && sonarPrId) {
+        sonarQubeUrl = `${baseUrl}/dashboard?id=${encodeURIComponent(projectKey)}&pullRequest=${sonarPrId}`;
+        return `📊 **[View Pull Request Analysis in SonarQube](${sonarQubeUrl})**`;
+    } else {
+        sonarQubeUrl = `${baseUrl}/dashboard?id=${encodeURIComponent(projectKey)}`;
+        return `📊 **[View Project Analysis in SonarQube](${sonarQubeUrl})**`;
+    }
+}
