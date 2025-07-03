@@ -16,13 +16,14 @@ async function main() {
     const GITHUB_HEAD_REF = getInput("headRef") || 'undefined' // Branch name of the PR
     const isPR = GITHUB_EVENT_NAME === 'pull_request' && GITHUB_PR_NUMBER !== 'undefined';
 
+    let sonarData = await sonarqubeInit();
+    
     let sonarPrId: string | undefined;
     if (isPR && GITHUB_HEAD_REF !== 'undefined') {
         sonarPrId = await getSonarPullRequestId(GITHUB_HEAD_REF);
+        
         console.log(`GitHub PR #${GITHUB_PR_NUMBER} (branch: ${GITHUB_HEAD_REF}) -> SonarQube PR: ${sonarPrId}`);
     }
-
-    let sonarData = await sonarqubeInit(sonarPrId);
     
     let msg = await generateMessage(sonarData, sonarPrId);
 
