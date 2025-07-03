@@ -21,11 +21,11 @@ function isPullRequest(): boolean {
 }
 
 
-export async function sonarqubeInit() {
+export async function sonarqubeInit(sonarPrId?: string) {
     const isPR = isPullRequest();
     
     console.log(`Analysis type - PR: ${isPR}`);
-    console.log(`Event: ${GITHUB_EVENT_NAME}, PR: ${GITHUB_PR_NUMBER}`);
+    console.log(`Event: ${GITHUB_EVENT_NAME}, GitHub PR: ${GITHUB_PR_NUMBER}, SonarQube PR: ${sonarPrId}`);
 
     let project_analyses_url = `${SONAR_URL}/api/project_analyses/search?project=${SONAR_KEY}`;
     let project_status_url = `${SONAR_URL}/api/qualitygates/project_status?projectKey=${SONAR_KEY}`;
@@ -33,11 +33,13 @@ export async function sonarqubeInit() {
     let new_issues_url = `${SONAR_URL}/api/issues/search?componentKeys=${SONAR_KEY}&s=FILE_LINE&resolved=false&inNewCodePeriod=true&ps=100&facets=severities%2Ctypes&additionalFields=_all`;
     let pull_request_statistics_url = `${SONAR_URL}/api/measures/component?additionalFields=period%2Cmetrics&component=${SONAR_KEY}&metricKeys=bugs%2Cnew_bugs%2Creliability_rating%2Cnew_reliability_rating%2Cvulnerabilities%2Cnew_vulnerabilities%2Csecurity_rating%2Cnew_security_rating%2Csecurity_hotspots%2Cnew_security_hotspots%2Csecurity_hotspots_reviewed%2Cnew_security_hotspots_reviewed%2Csecurity_review_rating%2Cnew_security_review_rating%2Ccode_smells%2Cnew_code_smells%2Csqale_rating%2Cnew_maintainability_rating%2Csqale_index%2Cnew_technical_debt%2Cduplicated_blocks%2Cnew_duplicated_blocks%2Clines%2Cnew_lines%2Cduplicated_lines%2Cnew_duplicated_lines%2Cnew_duplicated_lines_density`;
 
-    if (isPR) {
-        project_status_url += `&pullRequest=${GITHUB_PR_NUMBER}`;
-        new_issues_url += `&pullRequest=${GITHUB_PR_NUMBER}`;
-        pull_request_statistics_url += `&pullRequest=${GITHUB_PR_NUMBER}`;
-        console.log(`Using PR-specific analysis for PR #${GITHUB_PR_NUMBER}`);
+    const prIdToUse = sonarPrId || GITHUB_PR_NUMBER;
+    
+    if (isPR && prIdToUse) {
+        project_status_url += `&pullRequest=${prIdToUse}`;
+        new_issues_url += `&pullRequest=${prIdToUse}`;
+        pull_request_statistics_url += `&pullRequest=${prIdToUse}`;
+        console.log(`Using PR-specific analysis for SonarQube PR: ${prIdToUse}`);
     }
     else {
         console.log(`Using main branch analysis`);
@@ -48,6 +50,11 @@ export async function sonarqubeInit() {
     const history_issues_response  = await axios.get<HistoryIssuesResponse>(history_issues_url, { headers })
     const new_issues_response = await axios.get<NewIssuesResponse>(new_issues_url, { headers })
     const pull_request_statistics = await axios.get<PullRequestStatisticsResponse>(pull_request_statistics_url, { headers })
+
+    if (!pull_request_statistics.data || !pull_request_statistics.data.component || !pull_request_statistics.data.component.measures) {
+        console.error('Invalid response structure from SonarQube measures API:', pull_request_statistics.data);
+        throw new Error(`SonarQube API returned invalid response. Check if PR ID "${prIdToUse}" exists and has been analyzed.`);
+    }
 
     let [quality, qualityAVG] : [string, number] = qualityNumberCreate(pull_request_statistics.data)
 
