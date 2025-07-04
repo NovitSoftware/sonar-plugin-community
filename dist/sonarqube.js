@@ -119,22 +119,17 @@ function getSonarPullRequestId(branchName) {
             console.log('Available SonarQube PRs:', pullRequests);
             console.log(`Looking for branch: ${branchName}`);
             let matchingPr;
-            // 1. Exact branch name match (most accurate)
             matchingPr = pullRequests.find(pr => pr.branch === branchName);
             if (!matchingPr) {
-                // 2. Case insensitive branch name match
                 matchingPr = pullRequests.find(pr => { var _a; return ((_a = pr.branch) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === branchName.toLowerCase(); });
             }
             if (!matchingPr) {
-                // 3. Partial branch name match (in case of prefixes/suffixes)
                 matchingPr = pullRequests.find(pr => { var _a; return ((_a = pr.branch) === null || _a === void 0 ? void 0 : _a.includes(branchName)) || branchName.includes(pr.branch); });
             }
             if (!matchingPr) {
-                // 4. Look for branch name in title
                 matchingPr = pullRequests.find(pr => { var _a; return (_a = pr.title) === null || _a === void 0 ? void 0 : _a.includes(branchName); });
             }
             if (!matchingPr && pullRequests.length > 0) {
-                // 5. If no match found, try to get the most recent PR (fallback)
                 matchingPr = pullRequests.sort((a, b) => new Date(b.analysisDate).getTime() - new Date(a.analysisDate).getTime())[0];
                 console.log(`No exact match found for branch ${branchName}, using most recent SonarQube PR: ${matchingPr.key} (Branch: ${matchingPr.branch})`);
             }
@@ -152,7 +147,6 @@ function getSonarPullRequestId(branchName) {
     });
 }
 exports.getSonarPullRequestId = getSonarPullRequestId;
-// Function to get all SonarQube Pull Requests
 function getAllSonarPullRequests() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -166,14 +160,12 @@ function getAllSonarPullRequests() {
     });
 }
 exports.getAllSonarPullRequests = getAllSonarPullRequests;
-// Function to get SonarQube PR ID by branch name (more accurate)
 function getSonarPullRequestIdByBranch(branchName) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const pull_requests_response = yield axios_1.default.get(SONAR_URL + `/api/project_pull_requests/list?project=${SONAR_KEY}`, { headers });
             const pullRequests = pull_requests_response.data.pullRequests;
             console.log('Available SonarQube PRs:', pullRequests);
-            // Look for exact branch name match
             const matchingPr = pullRequests.find(pr => pr.branch === branchName);
             if (matchingPr) {
                 console.log(`Found matching SonarQube PR by branch - Key: ${matchingPr.key}, Title: ${matchingPr.title}, Branch: ${matchingPr.branch}`);

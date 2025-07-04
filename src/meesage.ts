@@ -32,6 +32,8 @@ ${generateSonarQubeLink(sonarqubeData.uuid_proyect, sonarPrId)}
 ---
 *Click the link above to view the complete analysis in SonarQube and get detailed information about all issues.*
 
+**Note:** If you do not have access to SonarQube, please contact your administrator or team lead to gain access.
+
    `
 }
 

@@ -2,10 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateMessage = void 0;
 const core_1 = require("@actions/core");
-// Get SonarQube configuration for link generation
 const SONAR_URL = (0, core_1.getInput)("sonarURL") || 'undefined';
-const SONAR_KEY = (0, core_1.getInput)("sonarKey") || 'undefined';
-const GITHUB_PR_NUMBER = (0, core_1.getInput)("pullRequest") || 'undefined';
 const GITHUB_EVENT_NAME = (0, core_1.getInput)("eventName") || 'undefined';
 function generateMessage(sonarqubeData, sonarPrId) {
     var _a, _b, _c, _d;
@@ -34,6 +31,8 @@ ${generateSonarQubeLink(sonarqubeData.uuid_proyect, sonarPrId)}
 
 ---
 *Click the link above to view the complete analysis in SonarQube and get detailed information about all issues.*
+
+**Note:** If you do not have access to SonarQube, please contact your administrator or team lead to gain access.
 
    `;
 }
@@ -102,11 +101,9 @@ function generateSonarQubeLink(projectKey, sonarPrId) {
         return "📊 **[View in SonarQube](javascript:void(0))** *(Link not available)*";
     }
     let baseUrl = SONAR_URL;
-    // Remove trailing slash if present
     if (baseUrl.endsWith('/')) {
         baseUrl = baseUrl.slice(0, -1);
     }
-    // Determine if we're analyzing a PR or main branch
     const isPR = GITHUB_EVENT_NAME === 'pull_request' && sonarPrId !== undefined && sonarPrId !== 'undefined';
     let sonarQubeUrl;
     if (isPR && sonarPrId) {

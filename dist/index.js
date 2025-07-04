@@ -20,16 +20,13 @@ const COMMENT = (0, core_1.getInput)("comment") || true;
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         console.log("start");
-        // Get GitHub context to determine if it's a PR
         const GITHUB_EVENT_NAME = (0, core_1.getInput)("eventName") || 'undefined';
         const GITHUB_PR_NUMBER = (0, core_1.getInput)("pullRequest") || 'undefined';
         const GITHUB_HEAD_REF = (0, core_1.getInput)("headRef") || 'undefined'; // Branch name of the PR
         const isPR = GITHUB_EVENT_NAME === 'pull_request' && GITHUB_PR_NUMBER !== 'undefined';
         let sonarData = yield (0, sonarqube_1.sonarqubeInit)();
-        // Get the actual SonarQube PR ID using branch name (most accurate)
         let sonarPrId;
         if (isPR && GITHUB_HEAD_REF !== 'undefined') {
-            // Use the main function with branch name
             sonarPrId = yield (0, sonarqube_1.getSonarPullRequestId)(GITHUB_HEAD_REF);
             console.log(`GitHub PR #${GITHUB_PR_NUMBER} (branch: ${GITHUB_HEAD_REF}) -> SonarQube PR: ${sonarPrId}`);
         }
