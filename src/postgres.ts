@@ -90,9 +90,12 @@ export async function insertInto(pullRequestDataCommits: PullRequestDataCommits,
   try {
     await client.query('BEGIN');
 
+    // Convertir pull_request_number a entero y quality_avg a número decimal
+    const pullRequestNumberInt = parseInt(pullRequestDataCommits.numberPR, 10);
+    const qualityAvgNumber = Number(sonarqubeData.quality_avg);
     const result = await client.query(
       'INSERT INTO quality_analysis_by_PR (uuid_analysis, uuid_proyect, "user", repository, branch, pull_request_number, pull_request_name, commits_amount, quality_avg, quality, team, issue, issuesResolved, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING uuid',
-      [sonarqubeData.uuid_analysis, sonarqubeData.uuid_proyect, pullRequestDataCommits.author, pullRequestDataCommits.repository, pullRequestDataCommits.branch, pullRequestDataCommits.numberPR, pullRequestDataCommits.title, pullRequestDataCommits.amount, sonarqubeData.quality_avg, sonarqubeData.quality, pullRequestDataCommits.team, sonarqubeData.issue, sonarqubeData.issuesResolved, sonarqubeData.project_status.projectStatus.status]
+      [sonarqubeData.uuid_analysis, sonarqubeData.uuid_proyect, pullRequestDataCommits.author, pullRequestDataCommits.repository, pullRequestDataCommits.branch, pullRequestNumberInt, pullRequestDataCommits.title, pullRequestDataCommits.amount, qualityAvgNumber, sonarqubeData.quality, pullRequestDataCommits.team, sonarqubeData.issue, sonarqubeData.issuesResolved, sonarqubeData.project_status.projectStatus.status]
     );
     
     const idInsertado = result.rows[0].uuid;
