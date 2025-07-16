@@ -5,7 +5,7 @@ const core_1 = require("@actions/core");
 const SONAR_URL = (0, core_1.getInput)("sonarURL") || 'undefined';
 const GITHUB_EVENT_NAME = (0, core_1.getInput)("eventName") || 'undefined';
 function generateMessage(sonarqubeData, sonarPrId) {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e, _f, _g, _h;
     return `## Quality Gate ${sonarqubeData.project_status.projectStatus.status == "OK" ? "Passed" : "Failed"}   ${searchPath(sonarqubeData.project_status.projectStatus.status == "OK" ? "approv" : "rejected")} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ![sonarqube 256x63 (1)](https://github.com/gustavo1020/-release-version-/assets/49031933/27434a7b-6a02-4686-a96a-57ecc73d5a85) &nbsp;&nbsp;  x  &nbsp;&nbsp;![c54422d50dc06739a00342935698799b (1)](https://github.com/gustavo1020/-release-version-/assets/49031933/0b02d722-ec4e-4397-b4c7-18108e8efba5)
 
 ### Additional information
@@ -21,9 +21,9 @@ ${searchPath("codeSmell")} ${searchPath(searchSecurity(sonarqubeData.measure, "n
 
 ### Coverage and Duplications
 
-${duplicatedIcon(Number(((_a = sonarqubeData.measure.find(x => x.metric == "new_coverage")) === null || _a === void 0 ? void 0 : _a.period.value) || "0"))} **Coverage** **%${((_b = sonarqubeData.measure.find(x => x.metric == "new_coverage")) === null || _b === void 0 ? void 0 : _b.period.value) || 0}**
+${coverageIcon(Number(((_b = (_a = sonarqubeData.measure.find(x => x.metric == "new_coverage")) === null || _a === void 0 ? void 0 : _a.period) === null || _b === void 0 ? void 0 : _b.value) || "0"))} **Coverage** **%${((_d = (_c = sonarqubeData.measure.find(x => x.metric == "new_coverage")) === null || _c === void 0 ? void 0 : _c.period) === null || _d === void 0 ? void 0 : _d.value) || "N/A"}**
 
-${coverageIcon(Number(((_c = sonarqubeData.measure.find(x => x.metric == "new_duplicated_lines_density")) === null || _c === void 0 ? void 0 : _c.period.value) || "0"))} **Duplication** **%${((_d = sonarqubeData.measure.find(x => x.metric == "new_duplicated_lines_density")) === null || _d === void 0 ? void 0 : _d.period.value) || 0}**
+${duplicatedIcon(Number(((_f = (_e = sonarqubeData.measure.find(x => x.metric == "new_duplicated_lines_density")) === null || _e === void 0 ? void 0 : _e.period) === null || _f === void 0 ? void 0 : _f.value) || "0"))} **Duplication** **%${((_h = (_g = sonarqubeData.measure.find(x => x.metric == "new_duplicated_lines_density")) === null || _g === void 0 ? void 0 : _g.period) === null || _h === void 0 ? void 0 : _h.value) || 0}**
 
 ### 🔍 View Detailed Analysis
 
