@@ -93,6 +93,10 @@ export async function insertInto(pullRequestDataCommits: PullRequestDataCommits,
     // Convertir pull_request_number a entero y quality_avg a número decimal
     const pullRequestNumberInt = parseInt(pullRequestDataCommits.numberPR, 10);
     const qualityAvgNumber = Number(sonarqubeData.quality_avg);
+    
+    console.log('Inserting quality analysis - PR Number:', pullRequestNumberInt, 'Quality Avg:', qualityAvgNumber);
+    console.log('Raw SonarQube data - Bug:', sonarqubeData.bug, 'Vulnerabilities:', sonarqubeData.vulnerabilities);
+    
     const result = await client.query(
       'INSERT INTO quality_analysis_by_PR (uuid_analysis, uuid_proyect, "user", repository, branch, pull_request_number, pull_request_name, commits_amount, quality_avg, quality, team, issue, issuesResolved, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING uuid',
       [sonarqubeData.uuid_analysis, sonarqubeData.uuid_proyect, pullRequestDataCommits.author, pullRequestDataCommits.repository, pullRequestDataCommits.branch, pullRequestNumberInt, pullRequestDataCommits.title, pullRequestDataCommits.amount, qualityAvgNumber, sonarqubeData.quality, pullRequestDataCommits.team, sonarqubeData.issue, sonarqubeData.issuesResolved, sonarqubeData.project_status.projectStatus.status]
@@ -100,9 +104,23 @@ export async function insertInto(pullRequestDataCommits: PullRequestDataCommits,
     
     const idInsertado = result.rows[0].uuid;
 
+    // Convert all numeric strings to integers for the statistics table
+    // Use parseInt with fallback to 0 for any invalid values
+    const bugInt = parseInt(sonarqubeData.bug || "0", 10) || 0;
+    const vulnerabilitiesInt = parseInt(sonarqubeData.vulnerabilities || "0", 10) || 0;
+    const securityHotspotsInt = parseInt(sonarqubeData.security_hotspots || "0", 10) || 0;
+    const reviewedInt = parseInt(sonarqubeData.reviewed || "0", 10) || 0;
+    const addedDebtInt = parseInt(sonarqubeData.added_debt || "0", 10) || 0;
+    const codeSmellsInt = parseInt(sonarqubeData.code_smells || "0", 10) || 0;
+    const duplicationsLinesInt = parseInt(sonarqubeData.duplications_lines || "0", 10) || 0;
+    const duplicatedBlocksInt = parseInt(sonarqubeData.duplicated_blocks || "0", 10) || 0;
+    const newLinesInt = parseInt(sonarqubeData.new_lines || "0", 10) || 0;
+
+    console.log('Inserting statistics - Bug:', bugInt, 'Vulnerabilities:', vulnerabilitiesInt, 'CodeSmells:', codeSmellsInt);
+
     const result2 = await client.query(
       'INSERT INTO statistics_by_PR (uuid_quality_analysis_by_PR, bug, vulnerabilities, security_hotspots, reviewed, added_debt, code_smells, duplications_lines, duplicated_blocks, new_lines) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
-      [idInsertado, sonarqubeData.bug, sonarqubeData.vulnerabilities, sonarqubeData.security_hotspots, sonarqubeData.reviewed, sonarqubeData.added_debt, sonarqubeData.code_smells, sonarqubeData.duplications_lines, sonarqubeData.duplicated_blocks, sonarqubeData.new_lines]
+      [idInsertado, bugInt, vulnerabilitiesInt, securityHotspotsInt, reviewedInt, addedDebtInt, codeSmellsInt, duplicationsLinesInt, duplicatedBlocksInt, newLinesInt]
     );
 
     await client.query('COMMIT');

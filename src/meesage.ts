@@ -21,9 +21,9 @@ ${searchPath("codeSmell")} ${searchPath(searchSecurity(sonarqubeData.measure, "n
 
 ### Coverage and Duplications
 
-${duplicatedIcon(Number(sonarqubeData.measure.find(x => x.metric == "new_coverage")?.period.value || "0"))} **Coverage** **%${sonarqubeData.measure.find(x => x.metric == "new_coverage")?.period.value || 0}**
+${coverageIcon(Number(sonarqubeData.measure.find(x => x.metric == "new_coverage")?.period?.value || "0"))} **Coverage** **%${sonarqubeData.measure.find(x => x.metric == "new_coverage")?.period?.value || "N/A"}**
 
-${coverageIcon(Number(sonarqubeData.measure.find(x => x.metric == "new_duplicated_lines_density")?.period.value || "0"))} **Duplication** **%${sonarqubeData.measure.find(x => x.metric == "new_duplicated_lines_density")?.period.value  || 0}**
+${duplicatedIcon(Number(sonarqubeData.measure.find(x => x.metric == "new_duplicated_lines_density")?.period?.value || "0"))} **Duplication** **%${sonarqubeData.measure.find(x => x.metric == "new_duplicated_lines_density")?.period?.value  || 0}**
 
 ### 🔍 View Detailed Analysis
 
